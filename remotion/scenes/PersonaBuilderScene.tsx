@@ -70,7 +70,5 @@ export const PersonaBuilderScene: React.FC<{ durationInFrames: number }> = ({ du
         </div>
       </div>
 </div>
-      
-    </div>
   );
 };

@@ -5,7 +5,7 @@ import '../src/styles/globals.css'; // Use Next.js tailwind globals
 
 export const RemotionRoot: React.FC = () => {
   const FPS = 60;
-  const DURATION_IN_FRAMES = 4740; // 750+840+780+840+750+780 = 4740 frames (79 seconds)
+  const DURATION_IN_FRAMES = 4594; // 733+840+814+869+700+638 = 4594 frames
 
   return (
     <>

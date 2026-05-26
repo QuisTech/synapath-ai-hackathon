@@ -56,7 +56,5 @@ export const CyberpunkScene: React.FC<{ durationInFrames: number }> = ({ duratio
         )}
       </div>
 </div>
-
-    </div>
   );
 };

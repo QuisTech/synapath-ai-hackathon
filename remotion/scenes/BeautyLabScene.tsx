@@ -83,7 +83,5 @@ export const BeautyLabScene: React.FC<{ durationInFrames: number }> = ({ duratio
         </div>
       </div>
 </div>
-      
-    </div>
   );
 };

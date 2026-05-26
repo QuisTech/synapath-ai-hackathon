@@ -39,7 +39,5 @@ export const MinimalistScene: React.FC<{ durationInFrames: number }> = ({ durati
         </div>
       </div>
 </div>
-
-    </div>
   );
 };

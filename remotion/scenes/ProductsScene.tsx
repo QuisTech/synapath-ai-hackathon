@@ -57,7 +57,5 @@ export const ProductsScene: React.FC<{ durationInFrames: number }> = ({ duration
         </div>
       </div>
 </div>
-
-    </div>
   );
 };

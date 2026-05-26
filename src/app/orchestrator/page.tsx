@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Network, Activity, Brain, Handshake, Zap, Mail, Server, Cpu } from 'lucide-react';
+import { Network, Activity, Brain, Handshake, Zap, Mail, Server, Cpu, Terminal } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const agents = [

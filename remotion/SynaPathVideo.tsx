@@ -10,12 +10,12 @@ import { OutroScene } from './scenes/OutroScene';
 
 export const SynaPathVideo: React.FC = () => {
   const scenes = [
-    { id: 'intro', duration: 750, Component: IntroScene, audio: '01_intro.mp3' },
+    { id: 'intro', duration: 733, Component: IntroScene, audio: '01_intro.mp3' },
     { id: 'dashboard', duration: 840, Component: DashboardScene, audio: '02_dashboard.mp3' },
-    { id: 'investigation', duration: 780, Component: InvestigationScene, audio: '03_investigation.mp3' },
-    { id: 'remediation', duration: 840, Component: RemediationScene, audio: '04_remediation.mp3' },
-    { id: 'analytics', duration: 750, Component: AnalyticsScene, audio: '05_analytics.mp3' },
-    { id: 'outro', duration: 780, Component: OutroScene, audio: '06_outro.mp3' },
+    { id: 'investigation', duration: 814, Component: InvestigationScene, audio: '03_investigation.mp3' },
+    { id: 'remediation', duration: 869, Component: RemediationScene, audio: '04_remediation.mp3' },
+    { id: 'analytics', duration: 700, Component: AnalyticsScene, audio: '05_analytics.mp3' },
+    { id: 'outro', duration: 638, Component: OutroScene, audio: '06_outro.mp3' },
   ];
 
   let currentFrame = 0;

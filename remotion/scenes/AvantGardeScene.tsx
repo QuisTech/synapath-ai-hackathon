@@ -40,6 +40,5 @@ export const AvantGardeScene: React.FC<{ durationInFrames: number }> = ({ durati
       </div>
 </div>
 
-    </div>
   );
 };
