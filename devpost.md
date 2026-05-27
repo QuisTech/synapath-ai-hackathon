@@ -1,6 +1,6 @@
 # SynaPath AI
 
-![SynaPath AI Demo](public/remix.gif)
+![SynaPath AI Demo](https://raw.githubusercontent.com/QuisTech/synapath-ai-hackathon/main/public/remix.gif)
 
 > **Your autonomous Site Reliability Engineer. SynaPath uses multi-agent AI to instantly triage, diagnose, and resolve system outages—reducing MTTR by 73% and manual effort by 85% with human-in-the-loop oversight.**
 
