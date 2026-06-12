@@ -2,6 +2,8 @@
 
 ![SynaPath AI Demo](https://raw.githubusercontent.com/QuisTech/synapath-ai-hackathon/main/public/remix.gif)
 
+🚀 **Live Demo:** [https://synapath-ai-hackathon.vercel.app](https://synapath-ai-hackathon.vercel.app)
+
 > **Intelligent Incident Management Platform. SynaPath provides comprehensive system diagnostics and automated remediation through advanced LLM-powered analysis—reducing MTTR by 73% and manual investigation by 85% with human-in-the-loop controls.**
 
 ---
@@ -63,6 +65,14 @@ The core of SynaPath implements a structured multi-stage analysis pipeline. Each
 ### Command Center Dashboard
 - **Purpose:** Operational workspace for incident monitoring, analysis tracking, and remediation approval
 - **Components:** Active Incident List (cases, status, severity), System Status HUD (Analysis pipeline health), Diagnostic Log Stream (Analysis steps, LLM reasoning, decision points), Remediation Review Panel (Proposed changes, approval workflow)
+
+### Agent Orchestrator
+- **Purpose:** Live topological map of the UiPath autonomous agent fleet
+- **Components:** Real-time metrics on task delegation, agent health, and operational bandwidth directly from the backend data store.
+
+### Platform Analytics
+- **Purpose:** Enterprise-level overview of MTTR savings and autonomous resolution rates
+- **Components:** Real-time data visualization connecting incident resolution speed with server health metrics.
 
 ## 🏆 Development Journey
 

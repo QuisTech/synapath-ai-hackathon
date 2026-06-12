@@ -2,6 +2,8 @@
 
 ![SynaPath AI Demo](https://raw.githubusercontent.com/QuisTech/synapath-ai-hackathon/main/public/remix.gif)
 
+🚀 **Live Demo:** [https://synapath-ai-hackathon.vercel.app](https://synapath-ai-hackathon.vercel.app)
+
 > **Your autonomous Site Reliability Engineer. SynaPath uses multi-agent AI to instantly triage, diagnose, and resolve system outages—reducing MTTR by 73% and manual effort by 85% with human-in-the-loop oversight.**
 
 ---
@@ -63,6 +65,14 @@ The core of SynaPath relies on our custom multi-agent orchestration framework. D
 ### Dashboard
 - **Purpose:** The functional AI workspace showing live reasoning, agent collaboration, incident progress, and human intervention points. 
 - **Components:** `GlobalIncidentView` (List of active cases, status, severity), `AgentStatusHUD` (Live status of each agent), `LiveReasoningLog` (Stream of agent interactions, LLM calls, decisions made), `ActionCenter` (Pending human approvals, one-click remediation execution), `IncidentDetailsPanel` (Comprehensive view of root causes, proposed solutions, audit trail).
+
+### Agent Orchestrator
+- **Purpose:** Live topological map of the UiPath autonomous agent fleet.
+- **Components:** Real-time visual metrics tracking task delegation, state changes, and pipeline throughput natively tied to the incident store backend.
+
+### Platform Analytics
+- **Purpose:** Executive-level observability into MTTR savings and system health.
+- **Components:** Live dashboarding that reflects how quickly the autonomous UIPath Agents are diagnosing incidents versus human industry baselines.
 
 ## 🏆 Hackathon Journey
 
