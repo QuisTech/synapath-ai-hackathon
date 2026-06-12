@@ -27,6 +27,21 @@ When a system alert fires, SynaPath instantly springs into action through a spec
 | **APIs** | UiPath Orchestrator API, External LLM APIs (e.g., Anthropic Claude API for core reasoning), ITSM APIs (ServiceNow, Jira, etc.), Monitoring System APIs (Datadog, Splunk, etc.), Cloud Provider APIs (AWS, Azure, GCP), UiPath for Coding Agents |
 | **Deployment** | UiPath Automation Cloud (for agents and workflows), Vercel (for Next.js dashboard), GitHub (for public repository) |
 
+## 🧩 UiPath Integration Details
+
+To fully comply with the hackathon submission guidelines, here is an explicit breakdown of how SynaPath AI utilizes the UiPath ecosystem:
+
+### 1. UiPath Components Used
+* **UiPath Maestro**: Used as the core orchestration engine to manage the end-to-end incident lifecycle, track case status, and handle handoffs between different AI agents.
+* **UiPath Agent Builder**: Utilized to design, prompt, and configure the individual AI personas (Intake, Knowledge, Diagnostic, Action, and Communication agents).
+* **UiPath Orchestrator & API Workflows**: Serves as the backend bridge to trigger automated diagnostic scripts and remediation actions on target servers.
+* **UiPath Coding Agents**: Leveraged dynamically to generate and execute custom remediation code snippets based on the LLM's root cause analysis.
+
+### 2. Agent Type Specification
+**SynaPath AI utilizes BOTH Coded Agents and Low-code Agents.**
+* **Low-code Agents** are used for the Intake & Triage, Knowledge, and Communication layers to rapidly parse payloads, query knowledge bases, and send ITSM updates via pre-built connectors.
+* **Coded Agents** are used heavily in the Diagnostic and Action & Remediation layers to execute custom bash/PowerShell scripts, integrate with Gemini CLI/Claude Code, and apply precise infrastructure fixes that require complex programming logic.
+
 ## 🤖 Agent Architecture
 
 The core of SynaPath relies on our custom multi-agent orchestration framework. Distinct AI personas hand off tasks to one another seamlessly:
@@ -96,24 +111,38 @@ We learned the deep intricacies of multi-agent prompt chaining and how to design
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Setup Instructions for Judging
 
-To run SynaPath AI locally and test the dashboard:
+Follow these step-by-step instructions to configure and run the SynaPath AI dashboard locally for your evaluation. 
+
+*(Note: The live Vercel deployment at [https://synapath-ai-hackathon.vercel.app](https://synapath-ai-hackathon.vercel.app) is fully configured and ready for immediate testing without any local installation.)*
+
+### 1. Prerequisites
+* Node.js (v18 or higher)
+* npm or yarn
+* Git
+
+### 2. Installation & Configuration
 
 ```bash
 # Clone the repository
 git clone https://github.com/QuisTech/synapath-ai-hackathon.git
 cd synapath-ai-hackathon
 
-# Install dependencies
+# Install frontend dependencies
 npm install
+```
 
-# Set up environment variables
-cp .env.example .env
-# Add your required API keys to .env
+### 3. Running the Application Locally
 
-# Start the development server
+```bash
+# Start the Next.js development server
 npm run dev
 ```
 
-The application will be available at [http://localhost:3000](http://localhost:3000).
+### 4. How to Test the Live Agent Pipeline
+1. Open your browser and navigate to [http://localhost:3000](http://localhost:3000).
+2. Click on the **"New Incident"** button on the Command Center Dashboard.
+3. This triggers a `POST` request to the backend `/api/incidents` endpoint, which simulates the UiPath Maestro multi-agent orchestration pipeline.
+4. Watch the incident transition through the 5 specialized agent states dynamically in the UI log stream.
+5. Navigate to the **Orchestrator** and **Analytics** tabs to see how the generated pipeline data populates the real-time system metrics.
