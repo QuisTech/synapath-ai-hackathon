@@ -1,18 +1,46 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Network, Activity, Brain, Handshake, Zap, Mail, Server, Cpu, Terminal } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const agents = [
-  { name: 'Intake & Triage Agent', icon: <Activity className="w-8 h-8 text-purple-400" />, status: 'active', tasks: 12, uptime: '99.9%', color: 'border-purple-500/50', img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80' },
-  { name: 'Knowledge & Context Agent', icon: <Brain className="w-8 h-8 text-blue-400" />, status: 'active', tasks: 4, uptime: '100%', color: 'border-blue-500/50', img: 'https://images.unsplash.com/photo-1507146153580-69a1fe6d8aa1?auto=format&fit=crop&w=600&q=80' },
-  { name: 'Diagnostic & Root Cause Agent', icon: <Handshake className="w-8 h-8 text-yellow-400" />, status: 'active', tasks: 8, uptime: '99.8%', color: 'border-yellow-500/50', img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80' },
-  { name: 'Action & Remediation Agent', icon: <Terminal className="w-8 h-8 text-red-400" />, status: 'standby', tasks: 0, uptime: '99.9%', color: 'border-red-500/50', img: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80' },
-  { name: 'Communication & Update Agent', icon: <Mail className="w-8 h-8 text-green-400" />, status: 'active', tasks: 45, uptime: '100%', color: 'border-green-500/50', img: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80' },
+const defaultAgents = [
+  { id: 'intake', name: 'Intake & Triage Agent', icon: <Activity className="w-8 h-8 text-purple-400" />, status: 'standby', tasks: 0, uptime: '99.9%', color: 'border-purple-500/50', img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80' },
+  { id: 'knowledge', name: 'Knowledge & Context Agent', icon: <Brain className="w-8 h-8 text-blue-400" />, status: 'standby', tasks: 0, uptime: '100%', color: 'border-blue-500/50', img: 'https://images.unsplash.com/photo-1507146153580-69a1fe6d8aa1?auto=format&fit=crop&w=600&q=80' },
+  { id: 'diagnostic', name: 'Diagnostic & Root Cause Agent', icon: <Handshake className="w-8 h-8 text-yellow-400" />, status: 'standby', tasks: 0, uptime: '99.8%', color: 'border-yellow-500/50', img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80' },
+  { id: 'action', name: 'Action & Remediation Agent', icon: <Terminal className="w-8 h-8 text-red-400" />, status: 'standby', tasks: 0, uptime: '99.9%', color: 'border-red-500/50', img: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80' },
+  { id: 'communication', name: 'Communication & Update Agent', icon: <Mail className="w-8 h-8 text-green-400" />, status: 'standby', tasks: 0, uptime: '100%', color: 'border-green-500/50', img: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80' },
 ];
 
 const OrchestratorPage = () => {
+  const [agents, setAgents] = useState(defaultAgents);
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const res = await fetch('/api/metrics');
+        if (res.ok) {
+          const data = await res.json();
+          const liveOrchestrator = data.orchestrator;
+          
+          setAgents(prev => prev.map(agent => {
+            const liveData = liveOrchestrator[agent.id];
+            if (liveData) {
+              return { ...agent, status: liveData.status, tasks: liveData.tasks };
+            }
+            return agent;
+          }));
+        }
+      } catch (err) {
+        console.error('Failed to fetch orchestrator metrics', err);
+      }
+    };
+
+    fetchMetrics();
+    const interval = setInterval(fetchMetrics, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-[calc(100vh-64px)] p-8 bg-background text-foreground relative overflow-hidden">
       {/* Background decoration */}
@@ -48,15 +76,15 @@ const OrchestratorPage = () => {
               <div className="p-6 pt-2 flex-grow flex flex-col">
                 <div className="flex justify-between items-start mb-4">
                   <h2 className="text-xl font-bold">{agent.name}</h2>
-                  <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${agent.status === 'active' ? 'bg-success/20 text-success border border-success/30' : 'bg-warning/20 text-warning border border-warning/30'}`}>
+                  <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-colors duration-500 ${agent.status === 'active' ? 'bg-success/20 text-success border border-success/30 shadow-[0_0_10px_rgba(34,197,94,0.3)]' : 'bg-warning/20 text-warning border border-warning/30'}`}>
                     {agent.status}
                   </div>
                 </div>
                 
                 <div className="space-y-3 mt-auto">
-                <div className="flex justify-between items-center bg-background/50 p-3 rounded-lg border border-border">
+                <div className={`flex justify-between items-center p-3 rounded-lg border transition-colors duration-500 ${agent.tasks > 0 ? 'bg-primary/10 border-primary/30' : 'bg-background/50 border-border'}`}>
                   <span className="text-secondary text-sm flex items-center gap-2"><Server className="w-4 h-4"/> Active Tasks</span>
-                  <span className="font-mono font-bold text-primary">{agent.tasks}</span>
+                  <span className={`font-mono font-bold text-xl ${agent.tasks > 0 ? 'text-primary' : 'text-foreground'}`}>{agent.tasks}</span>
                 </div>
                 <div className="flex justify-between items-center bg-background/50 p-3 rounded-lg border border-border">
                   <span className="text-secondary text-sm flex items-center gap-2"><Cpu className="w-4 h-4"/> Fleet Uptime</span>

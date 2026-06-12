@@ -1,10 +1,35 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PieChart, TrendingDown, Clock, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const AnalyticsPage = () => {
+  const [metrics, setMetrics] = useState({
+    mttr: '...',
+    autonomousRate: '...',
+    preventativeActions: 0,
+    health: { usEast: 99.99, euWest: 99.95, apSouth: 100.00 }
+  });
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const res = await fetch('/api/metrics');
+        if (res.ok) {
+          const data = await res.json();
+          setMetrics(data.analytics);
+        }
+      } catch (err) {
+        console.error('Failed to fetch analytics metrics', err);
+      }
+    };
+
+    fetchMetrics();
+    const interval = setInterval(fetchMetrics, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-[calc(100vh-64px)] p-8 bg-background text-foreground relative">
       <div className="absolute top-0 left-0 w-full h-96 z-0 overflow-hidden pointer-events-none">
@@ -31,7 +56,7 @@ const AnalyticsPage = () => {
               <span className="flex items-center text-success text-sm font-bold bg-success/10 px-2 py-1 rounded-full"><TrendingDown className="w-4 h-4 mr-1"/> 84%</span>
             </div>
             <h3 className="text-secondary font-medium mb-1">Mean Time To Resolution (MTTR)</h3>
-            <p className="text-4xl font-bold">4m 12s</p>
+            <p className="text-4xl font-bold transition-all duration-500">{metrics.mttr}</p>
             <p className="text-xs text-secondary mt-4">Industry average: 45m 30s</p>
           </motion.div>
 
@@ -44,7 +69,7 @@ const AnalyticsPage = () => {
               <div className="p-3 bg-success/20 text-success rounded-xl"><CheckCircle2 className="w-6 h-6" /></div>
             </div>
             <h3 className="text-secondary font-medium mb-1">Autonomous Resolution Rate</h3>
-            <p className="text-4xl font-bold">78.5%</p>
+            <p className="text-4xl font-bold transition-all duration-500">{metrics.autonomousRate}%</p>
             <p className="text-xs text-secondary mt-4">Incidents fixed without human intervention</p>
           </motion.div>
 
@@ -57,7 +82,7 @@ const AnalyticsPage = () => {
               <div className="p-3 bg-warning/20 text-warning rounded-xl"><AlertTriangle className="w-6 h-6" /></div>
             </div>
             <h3 className="text-secondary font-medium mb-1">Preventative Actions</h3>
-            <p className="text-4xl font-bold">1,402</p>
+            <p className="text-4xl font-bold transition-all duration-500">{metrics.preventativeActions.toLocaleString()}</p>
             <p className="text-xs text-secondary mt-4">Issues caught before impacting production</p>
           </motion.div>
         </div>
@@ -75,28 +100,28 @@ const AnalyticsPage = () => {
             <div>
               <div className="flex justify-between mb-2">
                 <span className="font-medium">US-East Cluster (Core API)</span>
-                <span className="text-success font-mono">99.99%</span>
+                <span className={`font-mono transition-colors duration-500 ${metrics.health.usEast < 99 ? 'text-danger' : 'text-success'}`}>{metrics.health.usEast}%</span>
               </div>
               <div className="w-full bg-background rounded-full h-3 border border-border">
-                <div className="bg-success h-2.5 rounded-full" style={{ width: '99%' }}></div>
+                <div className={`h-2.5 rounded-full transition-all duration-1000 ${metrics.health.usEast < 99 ? 'bg-danger' : 'bg-success'}`} style={{ width: `${metrics.health.usEast}%` }}></div>
               </div>
             </div>
             <div>
               <div className="flex justify-between mb-2">
                 <span className="font-medium">EU-West Cluster (Data Lake)</span>
-                <span className="text-warning font-mono">94.20%</span>
+                <span className={`font-mono transition-colors duration-500 ${metrics.health.euWest < 95 ? 'text-warning' : 'text-success'}`}>{metrics.health.euWest.toFixed(2)}%</span>
               </div>
               <div className="w-full bg-background rounded-full h-3 border border-border">
-                <div className="bg-warning h-2.5 rounded-full" style={{ width: '94%' }}></div>
+                <div className={`h-2.5 rounded-full transition-all duration-1000 ${metrics.health.euWest < 95 ? 'bg-warning' : 'bg-success'}`} style={{ width: `${metrics.health.euWest}%` }}></div>
               </div>
             </div>
             <div>
               <div className="flex justify-between mb-2">
                 <span className="font-medium">AP-South Cluster (Edge Cache)</span>
-                <span className="text-success font-mono">100.00%</span>
+                <span className="text-success font-mono">{metrics.health.apSouth.toFixed(2)}%</span>
               </div>
               <div className="w-full bg-background rounded-full h-3 border border-border">
-                <div className="bg-success h-2.5 rounded-full" style={{ width: '100%' }}></div>
+                <div className="bg-success h-2.5 rounded-full transition-all duration-1000" style={{ width: `${metrics.health.apSouth}%` }}></div>
               </div>
             </div>
           </div>
