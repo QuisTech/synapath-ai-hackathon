@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllIncidents, createIncident, updateIncident } from '@/lib/incidentStore';
 import { IntakeAndTriageAgent } from '@/agents/IntakeAndTriageAgent';
