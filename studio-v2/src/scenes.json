@@ -1,0 +1,38 @@
+[
+  {
+    "id": "scene1_fatigue",
+    "audio": "v2_ext_scene1.mp3",
+    "durationFrames": 900,
+    "durationSec": 16.752
+  },
+  {
+    "id": "scene2_intake",
+    "audio": "v2_ext_scene2.mp3",
+    "durationFrames": 900,
+    "durationSec": 15.48
+  },
+  {
+    "id": "scene3_diagnostics",
+    "audio": "v2_ext_scene3.mp3",
+    "durationFrames": 900,
+    "durationSec": 14.784
+  },
+  {
+    "id": "scene4_rootcause",
+    "audio": "v2_ext_scene4.mp3",
+    "durationFrames": 900,
+    "durationSec": 13.896
+  },
+  {
+    "id": "scene5_remediation",
+    "audio": "v2_ext_scene5.mp3",
+    "durationFrames": 900,
+    "durationSec": 14.544
+  },
+  {
+    "id": "scene6_recovery",
+    "audio": "v2_ext_scene6.mp3",
+    "durationFrames": 900,
+    "durationSec": 14.328
+  }
+]

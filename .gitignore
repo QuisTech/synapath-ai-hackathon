@@ -2,6 +2,7 @@ node_modules/
 .next/
 dist/
 build/
+out/
 .env
 .env.local
 *.log
@@ -9,4 +10,9 @@ build/
 coverage/
 .vercel
 
-.vercel
+# Large files
+merged.txt
+test_auth.js
+
+# Video/audio output
+out/*.mp4

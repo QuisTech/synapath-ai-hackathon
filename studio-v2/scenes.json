@@ -1,0 +1,20 @@
+[
+  {
+    "id": "scene1_alert",
+    "audio": "v2_scene1.mp3",
+    "durationFrames": 385,
+    "durationSec": 5.904
+  },
+  {
+    "id": "scene2_terminal",
+    "audio": "v2_scene2.mp3",
+    "durationFrames": 477,
+    "durationSec": 7.44
+  },
+  {
+    "id": "scene3_resolution",
+    "audio": "v2_scene3.mp3",
+    "durationFrames": 432,
+    "durationSec": 6.696
+  }
+]

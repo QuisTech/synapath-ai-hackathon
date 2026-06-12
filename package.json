@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "remotion": "remotion studio",
-    "build:video": "remotion render remotion/index.ts SynaPathCinematic out/final-devpost-remotion.mp4"
+    "build:video": "remotion render remotion/index.ts SynaPathCinematic out/final-devpost-remotion.mp4",
+    "test": "npx -y tsx --test src/__tests__/**/*.test.ts"
   },
   "dependencies": {
     "@remotion/google-fonts": "^4.0.465",
