@@ -10,7 +10,7 @@ export async function GET() {
   // Intake, Knowledge, Diagnostic all work on 'investigating' or 'active' incidents
   const investigatingCount = incidents.filter(i => i.status === 'investigating' || i.status === 'active').length;
   // Action agent works on 'pending human' or executes commands
-  const pendingHumanCount = incidents.filter(i => i.status === 'pending human').length;
+  const pendingHumanCount = incidents.filter(i => i.status === 'pending_human').length;
   // Communication agent communicates for everything, but let's base it on recent updates
   const activeCount = incidents.filter(i => i.status !== 'resolved').length;
 
