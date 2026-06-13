@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { getAllIncidents } from '@/lib/incidentStore';
 
 export async function GET() {
-  const incidents = getAllIncidents();
+  const incidents = await getAllIncidents();
 
   // 1. Calculate Orchestrator Tasks
   // Intake, Knowledge, Diagnostic all work on 'investigating' or 'active' incidents
