@@ -14,7 +14,7 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const incident = getIncident(params.id);
+    const incident = await getIncident(params.id);
     if (!incident) {
       return NextResponse.json({ error: 'Incident not found' }, { status: 404 });
     }
@@ -27,7 +27,7 @@ export async function POST(
     }
 
     // 1. Mark as resolved in our store
-    updateIncident(params.id, {
+    await updateIncident(params.id, {
       status: 'resolved',
       agentActivity: [
         `Action & Remediation Agent: ✅ Human approved remediation at ${new Date().toLocaleTimeString()}.`,
@@ -71,7 +71,7 @@ export async function POST(
       console.error('Failed to send comms update:', err);
     }
 
-    const updatedIncident = getIncident(params.id);
+    const updatedIncident = await getIncident(params.id);
     return NextResponse.json({ incident: updatedIncident });
   } catch (error) {
     console.error('Error approving incident:', error);

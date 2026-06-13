@@ -9,19 +9,16 @@ import { CommunicationAndUpdateAgent } from '@/agents/CommunicationAndUpdateAgen
 
 /**
  * GET /api/incidents
- * Returns all incidents from the in-memory store.
+ * Returns all incidents from the database.
  */
 export async function GET() {
-  const incidents = getAllIncidents();
+  const incidents = await getAllIncidents();
   return NextResponse.json({ incidents });
 }
 
 /**
  * POST /api/incidents
  * Creates a new incident and runs the full multi-agent pipeline:
- * Intake → Knowledge → Diagnostic → Action → Communication
- * 
- * Body: { title: string, source?: string, severity?: string, payload?: any }
  */
 export async function POST(request: NextRequest) {
   try {
@@ -33,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Create the incident in our store
-    const incident = createIncident({
+    const incident = await createIncident({
       title,
       source: source || 'Dashboard',
       severity: severity || 'high',
@@ -41,9 +38,7 @@ export async function POST(request: NextRequest) {
     });
 
     // 2. Run the multi-agent pipeline (non-blocking updates to the store)
-    // We run this asynchronously so the API responds fast with the created incident,
-    // and agents update the store as they complete.
-    runAgentPipeline(incident.id, title, source || 'Dashboard', payload || {});
+    runAgentPipeline(incident.id, title, source || 'Dashboard', payload || {}, severity);
 
     return NextResponse.json({ incident }, { status: 201 });
   } catch (error) {
@@ -54,9 +49,8 @@ export async function POST(request: NextRequest) {
 
 /**
  * Runs the full 5-agent SynaPath pipeline for an incident.
- * Each agent updates the incident store as it completes.
  */
-async function runAgentPipeline(incidentId: string, title: string, source: string, payload: any) {
+async function runAgentPipeline(incidentId: string, title: string, source: string, payload: any, initialSeverity?: string) {
   try {
     const intakeAgent = new IntakeAndTriageAgent();
     const knowledgeAgent = new KnowledgeAndContextAgent();
@@ -65,30 +59,32 @@ async function runAgentPipeline(incidentId: string, title: string, source: strin
     const commsAgent = new CommunicationAndUpdateAgent();
 
     // --- Stage 1: Intake & Triage ---
-    updateIncident(incidentId, {
+    await updateIncident(incidentId, {
       agentActivity: ['Intake & Triage Agent: Processing incoming incident...'],
       auditTrail: [`[${new Date().toLocaleTimeString()}] Intake & Triage Agent activated.`],
     });
 
     const triageResult = await intakeAgent.process({
       source,
-      payload: { title, ...payload },
+      payload: { title, ...payload, initialSeverity },
       timestamp: new Date().toISOString(),
     });
 
-    updateIncident(incidentId, {
+    const finalSeverity = initialSeverity || triageResult.severity;
+
+    await updateIncident(incidentId, {
       maestroCaseId: triageResult.caseId,
-      severity: triageResult.severity,
+      severity: finalSeverity,
       agentActivity: [
         `Intake & Triage Agent: Categorized as ${triageResult.category}.`,
-        `Intake & Triage Agent: Severity set to ${triageResult.severity.toUpperCase()}.`,
+        `Intake & Triage Agent: Severity set to ${finalSeverity.toUpperCase()}.`,
       ],
       auditTrail: [`[${new Date().toLocaleTimeString()}] Maestro Case ${triageResult.caseId} created.`],
       diagnosticPlan: triageResult.initialDiagnosticPlan,
     });
 
     // --- Stage 2: Knowledge & Context ---
-    updateIncident(incidentId, {
+    await updateIncident(incidentId, {
       agentActivity: ['Knowledge & Context Agent: Querying knowledge bases...'],
     });
 
@@ -98,7 +94,7 @@ async function runAgentPipeline(incidentId: string, title: string, source: strin
       identifiedKeywords: [title],
     });
 
-    updateIncident(incidentId, {
+    await updateIncident(incidentId, {
       agentActivity: [
         `Knowledge & Context Agent: Found ${knowledgeResult.relevantArticles.length} relevant KB articles.`,
         `Knowledge & Context Agent: Retrieved ${knowledgeResult.runbookSteps.length} runbook steps.`,
@@ -107,7 +103,7 @@ async function runAgentPipeline(incidentId: string, title: string, source: strin
     });
 
     // --- Stage 3: Diagnostic & Root Cause ---
-    updateIncident(incidentId, {
+    await updateIncident(incidentId, {
       agentActivity: ['Diagnostic & Root Cause Agent: Analyzing logs and metrics...'],
     });
 
@@ -120,7 +116,7 @@ async function runAgentPipeline(incidentId: string, title: string, source: strin
     });
 
     const primaryCause = diagnosticResult.hypothesizedRootCauses[0];
-    updateIncident(incidentId, {
+    await updateIncident(incidentId, {
       rootCause: primaryCause?.cause || 'Analysis in progress...',
       agentActivity: [
         `Diagnostic & Root Cause Agent: Primary hypothesis — "${primaryCause?.cause}" (${Math.round((primaryCause?.confidence || 0) * 100)}% confidence).`,
@@ -136,7 +132,7 @@ async function runAgentPipeline(incidentId: string, title: string, source: strin
     });
 
     // --- Stage 4: Action & Remediation ---
-    updateIncident(incidentId, {
+    await updateIncident(incidentId, {
       agentActivity: ['Action & Remediation Agent: Generating remediation plan...'],
     });
 
@@ -148,7 +144,7 @@ async function runAgentPipeline(incidentId: string, title: string, source: strin
     });
 
     const newStatus = actionResult.requiresHumanApproval ? 'pending_human' : 'resolved';
-    updateIncident(incidentId, {
+    await updateIncident(incidentId, {
       status: newStatus as any,
       proposedSolution: actionResult.proposedRemediation,
       agentActivity: [
@@ -170,7 +166,7 @@ async function runAgentPipeline(incidentId: string, title: string, source: strin
       auditTrailEntry: 'All agents completed processing. Stakeholders notified.',
     });
 
-    updateIncident(incidentId, {
+    await updateIncident(incidentId, {
       agentActivity: ['Communication & Update Agent: ✅ All stakeholders notified.'],
       auditTrail: [`[${new Date().toLocaleTimeString()}] Full agent pipeline complete.`],
     });
@@ -178,9 +174,10 @@ async function runAgentPipeline(incidentId: string, title: string, source: strin
     console.log(`Agent pipeline completed for incident ${incidentId}`);
   } catch (error) {
     console.error(`Agent pipeline failed for incident ${incidentId}:`, error);
-    updateIncident(incidentId, {
+    await updateIncident(incidentId, {
       agentActivity: [`⚠️ Pipeline error: ${error instanceof Error ? error.message : 'Unknown error'}`],
       auditTrail: [`[${new Date().toLocaleTimeString()}] Agent pipeline encountered an error.`],
     });
   }
 }
+

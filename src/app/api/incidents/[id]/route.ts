@@ -11,7 +11,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const incident = getIncident(params.id);
+  const incident = await getIncident(params.id);
   if (!incident) {
     return NextResponse.json({ error: 'Incident not found' }, { status: 404 });
   }

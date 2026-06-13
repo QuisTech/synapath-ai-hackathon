@@ -1,65 +1,70 @@
-/**
- * Client for interacting with External LLM APIs (e.g., Anthropic Claude, Gemini).
- * This is a simplified representation.
- */
+import Groq from "groq-sdk";
+
 export class LLMClient {
-  private apiKey: string;
-  private apiUrl: string;
+  private groq: Groq;
   private model: string;
 
-  constructor(model: string = 'claude-3-opus-20240229') {
-    this.apiKey = process.env.ANTHROPIC_API_KEY || 'your_anthropic_api_key'; // In real app, load securely
-    this.apiUrl = process.env.ANTHROPIC_API_URL || 'https://api.anthropic.com/v1';
+  constructor(model: string = 'llama3-70b-8192') {
+    this.groq = new Groq({
+      apiKey: process.env.GROQ_API_KEY || '',
+    });
     this.model = model;
-
-    if (!process.env.ANTHROPIC_API_KEY) {
-      console.warn('Anthropic API key environment variable not set. Using mock values.');
-    }
   }
 
   /**
    * Generates text using the configured LLM.
-   * @param prompt - The input prompt for the LLM.
-   * @param systemMessage - An optional system-level instruction for the LLM.
-   * @param temperature - Controls randomness (0-1), lower means more deterministic.
-   * @returns A promise resolving to the generated text.
    */
-  async generateText(prompt: string, systemMessage?: string, temperature: number = 0.7): Promise<string> {
-    console.log(`LLMClient: Generating text with model ${this.model}, prompt length: ${prompt.length}`);
+  async generateText(prompt: string, systemMessage?: string, temperature: number = 0.5): Promise<string> {
+    console.log(`LLMClient: Generating text with model ${this.model}`);
+    
+    // Default system message to enforce strict output formats needed by the agents
+    const defaultSystem = `You are SynaPath AI, an autonomous IT incident management orchestrator. 
+    You must strictly follow any "Output format" instructions provided in the prompt. Do not use markdown wrappers unless specifically asked. Do not add introductory conversational text like "Here is the result...". Provide ONLY the requested format.`;
 
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+    try {
+      const messages: any[] = [];
+      messages.push({ role: 'system', content: systemMessage || defaultSystem });
+      messages.push({ role: 'user', content: prompt });
 
-    // Mock LLM response based on prompt keywords
-    if (prompt.includes('root cause')) {
-      return 'Hypothesized root cause: Network misconfiguration. Diagnostic action: Ping affected services.';
-    } else if (prompt.includes('remediation')) {
-      return 'Proposed remediation: Apply network configuration template. Requires human approval.';
-    } else if (prompt.includes('categorize')) {
-      return 'Category: Network Incident, Severity: High, Impact: Service outage.';
-    } else if (prompt.includes('knowledge')) {
-        return 'Relevant KB article: KB-1234 (Network Troubleshooting Guide).';
+      const chatCompletion = await this.groq.chat.completions.create({
+        messages: messages,
+        model: this.model,
+        temperature: temperature,
+      });
+
+      const response = chatCompletion.choices[0]?.message?.content || "";
+      console.log(`LLMClient: Received response of length ${response.length}`);
+      return response;
+    } catch (error) {
+      console.error("LLM Generation failed:", error);
+      // Fallback for demo purposes if API fails
+      return this.mockGenerateText(prompt);
     }
-    return `Mock LLM response for: "${prompt.substring(0, 50)}...". (Temperature: ${temperature})`;
   }
 
   /**
-   * Generates a code snippet using the LLM (for Coding Agents).
-   * @param requirements - Description of the code to be generated.
-   * @param language - The desired programming language (e.g., 'python', 'powershell', 'xaml').
-   * @returns A promise resolving to the generated code snippet.
+   * Generates a code snippet using the LLM.
    */
   async generateCode(requirements: string, language: string): Promise<string> {
-    console.log(`LLMClient: Generating ${language} code for requirements: ${requirements.substring(0, 50)}...`);
-    await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
+    console.log(`LLMClient: Generating ${language} code...`);
+    const prompt = `Write a script in ${language} to fulfill the following requirements: ${requirements}\n\nIMPORTANT: Only output the raw code block. No explanations, no markdown wrappers like \`\`\`${language}, just the raw plain text code.`;
+    
+    return this.generateText(prompt, `You are an expert ${language} programmer. Output ONLY raw executable code. Do not wrap in markdown tags.`, 0.1);
+  }
 
-    if (language.toLowerCase() === 'powershell') {
-      return `# PowerShell script to ${requirements}
-Get-Service | Where-Object { $_.Status -eq 'Stopped' } | Start-Service`;
-    } else if (language.toLowerCase() === 'python') {
-      return `# Python script to ${requirements}
-import os\nprint("Executing Python task...")\n# Your logic here`;
+  /**
+   * Fallback mock generator in case the API key quota is exhausted or network fails
+   */
+  private mockGenerateText(prompt: string): string {
+    if (prompt.includes('root cause')) {
+      return 'Hypothesized root cause: Network misconfiguration. Diagnostic action: Ping affected services.';
+    } else if (prompt.includes('remediation')) {
+      return 'Remediation: "Apply network configuration template", ApprovalNeeded: true';
+    } else if (prompt.includes('categorize')) {
+      return 'Category: Network Incident, Severity: high, Impact: Service outage., Plan: Investigate switches.';
+    } else if (prompt.includes('knowledge')) {
+      return 'Relevant KB article: KB-1234 (Network Troubleshooting Guide).';
     }
-    return `// Generated ${language} code based on requirements: ${requirements}`; 
+    return 'Mock LLM response.';
   }
 }

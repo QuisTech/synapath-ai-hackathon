@@ -44,7 +44,7 @@ const Page = () => {
             transition={{ delay: 0.7, duration: 0.8 }}
             className="text-xl md:text-2xl text-indigo-100 mb-10 max-w-3xl mx-auto"
           >
-            Orchestrated by UiPath Agents, transforming reactive incident response into proactive, efficient, and 'human-in-the-loop' resolution.
+            Orchestrated by UiPath Agents, transforming reactive incident response into proactive, efficient, and &apos;human-in-the-loop&apos; resolution.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

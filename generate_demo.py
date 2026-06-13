@@ -8,17 +8,18 @@ from playwright.async_api import async_playwright
 # 1. Narrator voiceover text
 VOICEOVER_TEXT = (
     "Welcome to SynaPath AI, your autonomous Site Reliability Engineer built for the UiPath Hackathon. "
-    "Let's explore how our multi-agent workforce handles complex system incidents in real time. "
-    "We start at the Command Center dashboard. "
-    "Let's trigger a new critical server incident. "
-    "Instantly, the Intake and Triage agent captures the payload, while the Diagnostic agent begins its root cause analysis. "
+    "We start on our main landing page. "
+    "Let's dive right into the Command Center dashboard. "
+    "We'll trigger a new critical server incident. "
+    "Instantly, the Intake and Triage agent captures the payload. "
     "We can watch the live streaming logs as the LLM reasons through the stack traces. "
+    "Let's look at the Overview tab, the Agent Terminal, and then the Proposed Fix. "
+    "Here, our human-in-the-loop system allows an engineer to review and simply hit Approve Fix. "
     "Now, let's switch over to the Agent Orchestrator. "
     "Here, we can view the live topological map of our UiPath agent fleet. "
-    "Watch as the agents shift from standby to active, their task counts updating dynamically directly from the backend incident store. "
     "Finally, let's head to the Platform Analytics dashboard. "
     "This executive view visualizes the impact of our AI automation. "
-    "We are boasting an eighty-four percent reduction in Mean Time To Resolution, and our system health matrix dynamically drops when critical alerts are active. "
+    "We are boasting an eighty-four percent reduction in Mean Time To Resolution. "
     "SynaPath AI completely transforms IT incident response."
 )
 
@@ -136,31 +137,58 @@ async def record_walkthrough(temp_dir):
         page = await context.new_page()
         page.on("console", lambda msg: print(f"BROWSER CONSOLE: {msg.text}"))
 
-        file_url = "https://synapath-ai-hackathon.vercel.app/dashboard"
+        file_url = "https://synapath-ai-hackathon.vercel.app/"
         print(f"   Opening page: {file_url}")
         
         await page.add_init_script(CURSOR_INJECT_JS)
         await page.goto(file_url, wait_until="load")
-        await page.wait_for_timeout(7000) # Wait for initial narration "Welcome to SynaPath..."
+        
+        # --- SCENE 0: Home Page ---
+        print("   - Recording Scene 0: Home Page")
+        await page.wait_for_timeout(3000)
+        await page.evaluate("window.scrollBy({top: 800, behavior: 'smooth'})")
+        await page.wait_for_timeout(4000)
+        
+        # Click on Dashboard in the top nav
+        await smooth_click(page, "nav a:has-text('Dashboard')")
+        await page.wait_for_timeout(3000)
         
         # --- SCENE 1: Command Center & New Incident ---
         print("   - Recording Scene 1: Command Center")
         try:
-            # Click New Incident multiple times to populate the board
+            # Click New Incident
             await smooth_click(page, "button:has-text('New Incident')")
+            await page.wait_for_timeout(5000) # Let the streaming logs and status bars go
+            
+            # Click Overview Tab
+            await smooth_click(page, "button:has-text('Overview')")
+            await page.wait_for_timeout(2500)
+            
+            # Click Agent Terminal Tab
+            await smooth_click(page, "button:has-text('Agent Terminal')")
+            await page.wait_for_timeout(3000)
+            
+            # Click Proposed Fix Tab
+            await smooth_click(page, "button:has-text('Proposed Fix')")
             await page.wait_for_timeout(2000)
-            await smooth_click(page, "button:has-text('New Incident')")
+            
+            # Scroll down in the Proposed Fix tab if needed
+            await page.evaluate("const el = document.querySelector('.overflow-y-auto'); if (el) { el.scrollBy({top: 300, behavior: 'smooth'}); }")
             await page.wait_for_timeout(1000)
-            await smooth_click(page, "button:has-text('New Incident')")
-            await page.wait_for_timeout(8000) # Let the streaming logs and status bars go
+            
+            # Click Approve Fix
+            await smooth_click(page, "button:has-text('Approve Fix')")
+            await page.wait_for_timeout(3000)
         except Exception as e:
-            print(f"     (Failed to click New Incident: {e})")
+            print(f"     (Failed to interact with Command Center: {e})")
 
         # --- SCENE 2: Orchestrator Page ---
         print("   - Recording Scene 2: Agent Orchestrator")
         try:
             await smooth_click(page, "a:has-text('Orchestrator')")
-            await page.wait_for_timeout(12000) # Admire the changing standby/active states
+            await page.wait_for_timeout(3000)
+            await page.evaluate("window.scrollBy({top: 500, behavior: 'smooth'})")
+            await page.wait_for_timeout(3000)
         except Exception as e:
             print(f"     (Failed to navigate to Orchestrator: {e})")
             
@@ -168,7 +196,9 @@ async def record_walkthrough(temp_dir):
         print("   - Recording Scene 3: Platform Analytics")
         try:
             await smooth_click(page, "a:has-text('Analytics')")
-            await page.wait_for_timeout(15000) # Admire the dynamic metrics
+            await page.wait_for_timeout(3000)
+            await page.evaluate("window.scrollBy({top: 500, behavior: 'smooth'})")
+            await page.wait_for_timeout(5000)
         except Exception as e:
             print(f"     (Failed to navigate to Analytics: {e})")
         
@@ -224,13 +254,13 @@ def main():
         if os.path.exists(narration_audio):
             os.remove(narration_audio)
             
-        print(f"\n=======================================================")
+        print(f"\\n=======================================================")
         print(f"SYNAPATH AI DEMO VIDEO COMPILATION COMPLETE!")
         print(f"File created: {os.path.abspath(final_output)}")
         print(f"=======================================================")
         
     except Exception as e:
-        print(f"\n[ERROR] Video generation failed: {e}")
+        print(f"\\n[ERROR] Video generation failed: {e}")
 
 if __name__ == "__main__":
     main()

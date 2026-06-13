@@ -16,3 +16,9 @@ test_auth.js
 
 # Video/audio output
 out/*.mp4
+
+/src/generated/prisma
+
+*.mp4
+*.db
+*.db-journal

@@ -38,6 +38,8 @@ export class UiPathClient {
 
     if (!this.clientId || !this.clientSecret) {
       console.warn('UiPath API credentials not set. API calls will fail.');
+    } else {
+      console.log(`UiPathClient initialized for Tenant: ${this.tenantName}`);
     }
   }
 
@@ -106,8 +108,8 @@ export class UiPathClient {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.warn(`UiPath API Error (${response.status}):`, errorText);
-        // Fallback to mock data if the specific Maestro endpoint isn't fully active yet in the Hackathon environment
+        console.warn(`UiPath API Error (${response.status}) on ${endpoint}:`, errorText);
+        console.warn(`NOTE: OAuth token was successfully retrieved. Falling back to local state management for ${endpoint} to keep the demo functional.`);
         return this.getMockResponse(endpoint, method, data) as T;
       }
 

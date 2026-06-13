@@ -129,13 +129,30 @@ Follow these step-by-step instructions to configure and run the SynaPath AI dash
 git clone https://github.com/QuisTech/synapath-ai-hackathon.git
 cd synapath-ai-hackathon
 
-# Install frontend dependencies
+# Install backend & frontend dependencies
 npm install
 ```
 
-### 3. Running the Application Locally
+### 3. Environment Variables
+Create a `.env.local` file in the root directory and configure your actual API credentials:
+```env
+# UiPath Automation Cloud Credentials
+UIPATH_APP_ID="your_uipath_app_id"
+UIPATH_APP_SECRET="your_uipath_app_secret"
+UIPATH_ORG_NAME="your_uipath_org_name"
+UIPATH_TENANT_NAME="your_uipath_tenant_name"
+UIPATH_FOLDER_ID="your_uipath_folder_id"
+
+# LLM Intelligence 
+GROQ_API_KEY="your_groq_api_key"
+```
+
+### 4. Running the Application Locally
 
 ```bash
+# Setup the local SQLite database
+npx prisma db push
+
 # Start the Next.js development server
 npm run dev
 ```

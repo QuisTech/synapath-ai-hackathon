@@ -83,7 +83,7 @@ export class ActionAndRemediationAgent {
       const approvalMatch = remediationLLMResponse.match(/ApprovalNeeded: (true|false)/i);
 
       proposedRemediation = remediationMatch ? remediationMatch[1] : `Automatically restart service associated with ${primaryRootCause.cause}.`;
-      requiresHumanApproval = approvalMatch ? JSON.parse(approvalMatch[1].toLowerCase()) : (primaryRootCause.confidence > 0.8 && !input.humanApprovalRequired); // Default logic
+      requiresHumanApproval = approvalMatch ? JSON.parse(approvalMatch[1].toLowerCase()) : input.humanApprovalRequired; // Default logic
 
       if (requiresHumanApproval) {
         status = 'pending_approval';
