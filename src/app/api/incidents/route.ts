@@ -70,7 +70,7 @@ async function runAgentPipeline(incidentId: string, title: string, source: strin
       timestamp: new Date().toISOString(),
     });
 
-    const finalSeverity = initialSeverity || triageResult.severity;
+    const finalSeverity = (initialSeverity || triageResult.severity) as 'low' | 'medium' | 'high' | 'critical';
 
     await updateIncident(incidentId, {
       maestroCaseId: triageResult.caseId,
