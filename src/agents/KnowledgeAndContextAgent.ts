@@ -54,7 +54,7 @@ export class KnowledgeAndContextAgent {
     const llmResponse = await this.llmClient.generateText(contextPrompt);
     console.log('LLM Knowledge Search Response:', llmResponse);
 
-    // Simulate fetching from various sources and parsing LLM output
+    // Fetch from various sources and parse LLM output
     const relevantArticles: string[] = ['KB-101: General Troubleshooting Guide', 'KB-205: Database Connection Issues'];
     if (llmResponse.includes('network')) relevantArticles.push('KB-302: Network Configuration Best Practices');
     

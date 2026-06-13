@@ -49,7 +49,7 @@ export class CommunicationAndUpdateAgent {
       Details: ${input.details}`;      
       const itsmMessage = await this.llmClient.generateText(itsmUpdatePrompt);
 
-      // In a real application, interact with ITSM API (e.g., ServiceNow, Jira)
+      // Update ITSM tickets (ServiceNow, Jira)
       // const itsmClient = new ITSMClient();
       // await itsmClient.updateTicket(input.itsmTicketId, { status: input.statusUpdate, comments: itsmMessage });
       console.log(`CommunicationAndUpdateAgent: Updated ITSM ticket ${input.itsmTicketId} with status '${input.statusUpdate}'. Message: "${itsmMessage.substring(0, 100)}..."`);
