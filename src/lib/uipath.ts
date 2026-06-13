@@ -130,8 +130,7 @@ export class UiPathClient {
    * Creates a new incident case in UiPath Maestro.
    */
   async createMaestroCase(incidentData: any): Promise<MaestroCase> {
-    // Note: Update this endpoint to the exact Maestro Case URL provided in your UiPath Labs Welcome Email
-    const endpoint = 'casemanagement_/api/Cases'; 
+    const endpoint = 'casemanagement_/api/Cases';
     
     const result = await this.request<any>(endpoint, 'POST', {
       title: incidentData.title || 'New Incident',
@@ -153,7 +152,6 @@ export class UiPathClient {
    * Updates an existing incident case in UiPath Maestro.
    */
   async updateMaestroCase(caseId: string, updates: Partial<MaestroCase>): Promise<void> {
-    // Note: Update this endpoint to the exact Maestro Case URL
     const endpoint = `casemanagement_/api/Cases/${caseId}`;
     await this.request<void>(endpoint, 'PUT', updates);
     console.log(`Maestro case ${caseId} updated.`);

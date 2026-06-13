@@ -25,16 +25,13 @@ export async function GET() {
   // 2. Calculate Analytics Metrics
   const resolvedIncidents = incidents.filter(i => i.status === 'resolved');
   
-  let mttrText = '4m 12s'; // baseline computed value
+  let mttrText = '0m 0s';
   if (resolvedIncidents.length > 0) {
     let totalMs = 0;
     resolvedIncidents.forEach(inc => {
       const created = new Date(inc.createdAt).getTime();
       const updated = new Date(inc.updatedAt).getTime();
-      // If it took 0 seconds, fake it to a realistic fast time like 12s
-      let diff = updated - created;
-      if (diff < 1000) diff = 12000 + Math.random() * 5000; 
-      totalMs += diff;
+      totalMs += (updated - created);
     });
     const avgMs = totalMs / resolvedIncidents.length;
     const mins = Math.floor(avgMs / 60000);
@@ -42,7 +39,7 @@ export async function GET() {
     mttrText = `${mins}m ${secs}s`;
   }
 
-  // System Health Matrix - dynamically drop if there's a critical active incident
+  // System Health Matrix - dynamically calculate based on severity
   const criticalActive = incidents.some(i => i.severity === 'critical' && i.status !== 'resolved');
   const highActive = incidents.some(i => i.severity === 'high' && i.status !== 'resolved');
 
@@ -52,11 +49,13 @@ export async function GET() {
     apSouth: 100.00
   };
 
-  // Preventative actions slowly goes up
-  const baseActions = 1402;
-  const preventativeActions = baseActions + (resolvedIncidents.length * 3);
+  // Preventative actions derived directly from resolved incidents
+  const preventativeActions = resolvedIncidents.length * 3;
 
-  const autonomousRate = resolvedIncidents.length > 0 ? 82.5 + (resolvedIncidents.length * 0.5) : 78.5;
+  // Autonomous rate based on resolved vs total
+  const autonomousRate = incidents.length > 0 
+    ? (resolvedIncidents.length / incidents.length) * 100 
+    : 100.0;
 
   return NextResponse.json({
     orchestrator,
