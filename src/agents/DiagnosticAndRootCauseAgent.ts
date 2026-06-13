@@ -76,18 +76,8 @@ export class DiagnosticAndRootCauseAgent {
         output.recommendedDiagnosticActions = parsedResponse.diagnosticActions;
       }
     } catch (e) {
-      console.error('Failed to parse LLM diagnostic response, using defaults:', e);
-      // Fallback to default mock data if parsing fails
-      output.hypothesizedRootCauses = [
-        { cause: 'Network connectivity issue', confidence: 0.7, explanation: 'Based on timeouts in logs and general slowness.' },
-        { cause: 'Service misconfiguration', confidence: 0.5, explanation: 'Recent change detected, potentially affecting service startup.' },
-      ];
-      output.recommendedDiagnosticActions = [
-        'Run network diagnostics tools (ping, traceroute)',
-        'Check firewall rules and security groups',
-        'Verify service configuration files against baseline',
-        'Attempt to restart affected service with verbose logging'
-      ];
+      console.error('Failed to parse LLM diagnostic response. Ensure the prompt strictly enforces JSON format.', e);
+      // If parsing fails completely, rely on the base default rather than hardcoded examples
     }
     
     // Update Maestro case with agent activity

@@ -37,8 +37,7 @@ export class LLMClient {
       return response;
     } catch (error) {
       console.error("LLM Generation failed:", error);
-      // Fallback for demo purposes if API fails
-      return this.mockGenerateText(prompt);
+      throw new Error(`Groq LLM Generation Failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -50,21 +49,5 @@ export class LLMClient {
     const prompt = `Write a script in ${language} to fulfill the following requirements: ${requirements}\n\nIMPORTANT: Only output the raw code block. No explanations, no markdown wrappers like \`\`\`${language}, just the raw plain text code.`;
     
     return this.generateText(prompt, `You are an expert ${language} programmer. Output ONLY raw executable code. Do not wrap in markdown tags.`, 0.1);
-  }
-
-  /**
-   * Fallback mock generator in case the API key quota is exhausted or network fails
-   */
-  private mockGenerateText(prompt: string): string {
-    if (prompt.includes('root cause')) {
-      return 'Hypothesized root cause: Network misconfiguration. Diagnostic action: Ping affected services.';
-    } else if (prompt.includes('remediation')) {
-      return 'Remediation: "Apply network configuration template", ApprovalNeeded: true';
-    } else if (prompt.includes('categorize')) {
-      return 'Category: Network Incident, Severity: high, Impact: Service outage., Plan: Investigate switches.';
-    } else if (prompt.includes('knowledge')) {
-      return 'Relevant KB article: KB-1234 (Network Troubleshooting Guide).';
-    }
-    return 'Mock LLM response.';
   }
 }

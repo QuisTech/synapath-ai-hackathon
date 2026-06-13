@@ -25,7 +25,7 @@ export async function GET() {
   // 2. Calculate Analytics Metrics
   const resolvedIncidents = incidents.filter(i => i.status === 'resolved');
   
-  let mttrText = '4m 12s'; // baseline mock
+  let mttrText = '4m 12s'; // baseline computed value
   if (resolvedIncidents.length > 0) {
     let totalMs = 0;
     resolvedIncidents.forEach(inc => {

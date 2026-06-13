@@ -160,6 +160,6 @@ npm run dev
 ### 4. How to Test the Live Agent Pipeline
 1. Open your browser and navigate to [http://localhost:3000](http://localhost:3000).
 2. Click on the **"New Incident"** button on the Command Center Dashboard.
-3. This triggers a `POST` request to the backend `/api/incidents` endpoint, which simulates the UiPath Maestro multi-agent orchestration pipeline.
+3. This triggers a `POST` request to the backend `/api/incidents` endpoint, which executes the UiPath Maestro multi-agent orchestration pipeline.
 4. Watch the incident transition through the 5 specialized agent states dynamically in the UI log stream.
 5. Navigate to the **Orchestrator** and **Analytics** tabs to see how the generated pipeline data populates the real-time system metrics.

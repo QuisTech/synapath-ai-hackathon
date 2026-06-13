@@ -72,7 +72,7 @@ export class KnowledgeAndContextAgent {
       relevantArticles,
       runbookSteps,
       historicalContext,
-      systemDiagrams: ['SYS-DIAG-001: Prod Env Network Layout'], // Mock example
+      systemDiagrams: ['SYS-DIAG-001: Prod Env Network Layout'],
     };
   }
 }

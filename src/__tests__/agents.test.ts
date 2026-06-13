@@ -2,8 +2,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 /**
- * synapath-ai agents use UiPathClient and LLMClient, but both are pre-mocked
- * with setTimeout-based simulations. Tests exercise real agent logic paths.
+ * synapath-ai agents use real UiPathClient and LLMClient (with valid credentials).
+ * Tests exercise real agent logic paths.
  */
 
 // ─── IntakeAndTriageAgent ────────────────────────────────────────────

@@ -60,13 +60,16 @@ export class ActionAndRemediationAgent {
       const generatedScript = await this.llmClient.generateCode(scriptRequirement, 'powershell');
 
       // In a real scenario, this would involve UiPath Coding Agent executing the script
-      const mockExecutionResult = `Script for "${action}" executed. Output: Mock data gathered for ${action}.`;
-      executionResults.push(mockExecutionResult);
-      console.log(mockExecutionResult);
-
-      // Simulate UiPath workflow trigger
-      // const job = await this.uipathClient.triggerWorkflow('ExecuteDiagnosticScript', { script: generatedScript, incidentId: input.incidentId });
-      // executionResults.push(`Triggered UiPath Job ${job.jobId} for: ${action}`);
+      try {
+        const job = await this.uipathClient.triggerWorkflow('ExecuteDiagnosticScript', { script: generatedScript, incidentId: input.incidentId });
+        const executionLog = `Triggered UiPath Job ${job.jobId} for: ${action}`;
+        executionResults.push(executionLog);
+        console.log(executionLog);
+      } catch (err) {
+        const errorLog = `Failed to trigger UiPath Job for: ${action}. Error: ${err instanceof Error ? err.message : String(err)}`;
+        executionResults.push(errorLog);
+        console.error(errorLog);
+      }
     }
 
     // Step 2: Based on new data and primary root cause, propose remediation

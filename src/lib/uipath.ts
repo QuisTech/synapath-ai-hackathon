@@ -109,8 +109,7 @@ export class UiPathClient {
       if (!response.ok) {
         const errorText = await response.text();
         console.warn(`UiPath API Error (${response.status}) on ${endpoint}:`, errorText);
-        console.warn(`NOTE: OAuth token was successfully retrieved. Falling back to local state management for ${endpoint} to keep the demo functional.`);
-        return this.getMockResponse(endpoint, method, data) as T;
+        throw new Error(`UiPath API Request Failed: ${response.status} - ${errorText}`);
       }
 
       // Handle 204 No Content
@@ -122,25 +121,10 @@ export class UiPathClient {
 
     } catch (error) {
       console.error('UiPath API Request Failed:', error);
-      // Fallback to mock data to keep the UI functioning during development
-      return this.getMockResponse(endpoint, method, data) as T;
+      throw error;
     }
   }
 
-  /**
-   * Fallback mock responses to keep the frontend working if the exact API endpoints change during the hackathon
-   */
-  private getMockResponse(endpoint: string, method: string, data?: any): any {
-    console.log(`Falling back to mock response for ${endpoint}`);
-    if (endpoint.includes('Cases') && method === 'POST') {
-      return { id: `CASE-${Date.now()}`, status: 'New', ...data };
-    } else if (endpoint.includes('Cases')) {
-      return { id: 'CASE-123', status: 'Active', incidentDetails: { title: 'Mock Incident' }, agentActivityLog: [], currentPlan: [] };
-    } else if (endpoint.includes('Jobs') || endpoint.includes('Workflows')) {
-      return { jobId: `JOB-${Date.now()}`, status: 'Queued' };
-    }
-    return {};
-  }
 
   /**
    * Creates a new incident case in UiPath Maestro.
@@ -149,15 +133,14 @@ export class UiPathClient {
     // Note: Update this endpoint to the exact Maestro Case URL provided in your UiPath Labs Welcome Email
     const endpoint = 'casemanagement_/api/Cases'; 
     
-    // We try to hit the real API. If it fails (e.g. endpoint incorrect), request() falls back to returning the valid UI object.
     const result = await this.request<any>(endpoint, 'POST', {
       title: incidentData.title || 'New Incident',
       data: incidentData, // Payload structure will depend on actual Case schema
     });
 
-    // Map the real response (or mock) to the UI's expected format
+    // Map the real response to the UI's expected format
     return {
-      id: result.Id || result.id || `CASE-${Date.now()}`,
+      id: result.Id || result.id,
       status: 'New',
       severity: incidentData.severity || 'Medium',
       incidentDetails: incidentData,
@@ -193,7 +176,7 @@ export class UiPathClient {
 
     const result = await this.request<any>(endpoint, 'POST', payload);
     return {
-      jobId: result.value?.[0]?.Id || result.jobId || `JOB-${Date.now()}`,
+      jobId: result.value?.[0]?.Id || result.jobId,
       status: 'Queued'
     };
   }
