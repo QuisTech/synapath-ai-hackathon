@@ -132,10 +132,16 @@ export class UiPathClient {
   async createMaestroCase(incidentData: any): Promise<MaestroCase> {
     const endpoint = 'casemanagement_/api/Cases';
     
-    const result = await this.request<any>(endpoint, 'POST', {
-      title: incidentData.title || 'New Incident',
-      data: incidentData, // Payload structure will depend on actual Case schema
-    });
+    let result: any = {};
+    try {
+      result = await this.request<any>(endpoint, 'POST', {
+        title: incidentData.title || 'New Incident',
+        data: incidentData, // Payload structure will depend on actual Case schema
+      });
+    } catch (err: any) {
+      console.warn('Graceful degradation: Maestro API failed, continuing pipeline with offline case ID.', err.message);
+      result = { Id: `CASE-OFFLINE-${Date.now()}` };
+    }
 
     // Map the real response to the UI's expected format
     return {
@@ -153,8 +159,14 @@ export class UiPathClient {
    */
   async updateMaestroCase(caseId: string, updates: Partial<MaestroCase>): Promise<void> {
     const endpoint = `casemanagement_/api/Cases/${caseId}`;
-    await this.request<void>(endpoint, 'PUT', updates);
-    console.log(`Maestro case ${caseId} updated.`);
+    try {
+      if (!caseId.startsWith('CASE-OFFLINE')) {
+        await this.request<void>(endpoint, 'PUT', updates);
+        console.log(`Maestro case ${caseId} updated.`);
+      }
+    } catch (err: any) {
+      console.warn(`Graceful degradation: Failed to update Maestro case ${caseId}.`, err.message);
+    }
   }
 
   /**
