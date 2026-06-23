@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model Incident {
-  id               String   @id
+  id               String   @id @map("_id")
   maestroCaseId    String?
   title            String
   source           String

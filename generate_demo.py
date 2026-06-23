@@ -3,6 +3,7 @@ import os
 import glob
 import subprocess
 import shutil
+# pyrefly: ignore [missing-import]
 from playwright.async_api import async_playwright
 
 # 1. Narrator voiceover text
