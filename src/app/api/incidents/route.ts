@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
       metrics: payload?.metrics || { cpu: 'Fetching...', memory: 'Fetching...', latency: 'Fetching...' },
     });
 
-    // 2. Run the multi-agent pipeline (non-blocking updates to the store)
-    runAgentPipeline(incident.id, title, source || 'Dashboard', payload || {}, severity);
+    // 2. Run the multi-agent pipeline (blocking updates to ensure Vercel serverless doesn't kill it)
+    await runAgentPipeline(incident.id, title, source || 'Dashboard', payload || {}, severity);
 
     return NextResponse.json({ incident }, { status: 201 });
   } catch (error) {
