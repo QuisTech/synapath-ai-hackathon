@@ -4,7 +4,7 @@ export class LLMClient {
   private groq: Groq;
   private model: string;
 
-  constructor(model: string = 'llama3-70b-8192') {
+  constructor(model: string = 'llama-3.3-70b-versatile') {
     this.groq = new Groq({
       apiKey: process.env.GROQ_API_KEY || '',
     });
