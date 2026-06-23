@@ -109,6 +109,8 @@ const Dashboard = () => {
     }
   };
 
+  const [isRejecting, setIsRejecting] = useState(false);
+
   // Approve remediation via the API
   const handleApproveRemediation = async (incidentId: string) => {
     setIsApproving(true);
@@ -117,7 +119,6 @@ const Dashboard = () => {
         method: 'POST',
       });
       if (res.ok) {
-        const data = await res.json();
         setReasoningLog((prev) => [
           ...prev,
           `[${new Date().toLocaleTimeString()}] ✅ Human approved remediation for ${incidentId}. Executing fix...`,
@@ -128,6 +129,27 @@ const Dashboard = () => {
       console.error('Failed to approve incident:', error);
     } finally {
       setIsApproving(false);
+    }
+  };
+
+  // Reject remediation via the API
+  const handleRejectRemediation = async (incidentId: string) => {
+    setIsRejecting(true);
+    try {
+      const res = await fetch(`/api/incidents/${incidentId}/reject`, {
+        method: 'POST',
+      });
+      if (res.ok) {
+        setReasoningLog((prev) => [
+          ...prev,
+          `[${new Date().toLocaleTimeString()}] ❌ Human REJECTED remediation for ${incidentId}. Sending back to investigation.`,
+        ]);
+        await fetchIncidents();
+      }
+    } catch (error) {
+      console.error('Failed to reject incident:', error);
+    } finally {
+      setIsRejecting(false);
     }
   };
 
@@ -438,12 +460,17 @@ const Dashboard = () => {
                         <p className="text-sm text-foreground mt-1">Agent proposes executing the above script on target servers.</p>
                       </div>
                       <div className="flex gap-3">
-                        <button className="bg-background border border-border hover:bg-card text-foreground py-2 px-6 rounded-md font-semibold transition-colors">
-                          Reject Fix
+                        <button 
+                          onClick={() => handleRejectRemediation(selectedIncident.id)}
+                          disabled={isApproving || isRejecting}
+                          className="bg-background border border-border hover:bg-card hover:border-danger hover:text-danger disabled:opacity-50 text-foreground py-2 px-6 rounded-md font-semibold transition-colors flex items-center gap-2"
+                        >
+                          {isRejecting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                          {isRejecting ? 'Rejecting...' : 'Reject Fix'}
                         </button>
                         <button 
                           onClick={() => handleApproveRemediation(selectedIncident.id)}
-                          disabled={isApproving}
+                          disabled={isApproving || isRejecting}
                           className="bg-success hover:bg-green-600 disabled:opacity-50 text-white py-2 px-6 rounded-md font-bold transition-colors shadow-lg hover:shadow-green-500/20 flex items-center gap-2"
                         >
                           {isApproving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
