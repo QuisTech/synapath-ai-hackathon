@@ -39,23 +39,26 @@ const Dashboard = () => {
 
   // Fetch incidents from the API
   const fetchIncidents = useCallback(async () => {
+    setIsLoading(true);
     try {
       const res = await fetch('/api/incidents');
       if (res.ok) {
         const data = await res.json();
         setActiveIncidents(data.incidents);
-        // Update selected incident if it exists
-        if (selectedIncident) {
-          const updated = data.incidents.find((inc: Incident) => inc.id === selectedIncident.id);
-          if (updated) setSelectedIncident(updated);
-        }
+
+        // Safely update selected incident using functional state update to avoid stale closures in setInterval
+        setSelectedIncident((prev) => {
+          if (!prev) return prev;
+          const updated = data.incidents.find((i: Incident) => i.id === prev.id);
+          return updated || prev;
+        });
       }
     } catch (error) {
       console.error('Failed to fetch incidents:', error);
     } finally {
       setIsLoading(false);
     }
-  }, [selectedIncident]);
+  }, []);
 
   // Initial fetch + polling every 3 seconds for live updates
   useEffect(() => {
