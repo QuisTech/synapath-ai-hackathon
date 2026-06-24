@@ -22,3 +22,11 @@ out/*.mp4
 *.mp4
 *.db
 *.db-journal
+
+# Internal Hackathon Tools & Assets
+generate_demo.py
+take_screenshots.py
+*.js
+*.mp3
+devpost_screenshot_*.png
+video_temp/
