@@ -23,8 +23,9 @@ When a system alert fires, SynaPath instantly springs into action through a spec
 | Layer | Technologies |
 |---|---|
 | **Frontend** | Next.js (App Router), Tailwind CSS, Framer Motion, Lucide React |
-| **Backend** | UiPath Automation Cloud (Maestro, Agent Builder, API Workflows, Orchestrator), UiPath Coding Agents (for Claude Code, Gemini CLI integration), Node.js (for custom API proxies/webhooks to Next.js dashboard) |
-| **APIs** | UiPath Orchestrator API, External LLM APIs (e.g., Anthropic Claude API for core reasoning), ITSM APIs (ServiceNow, Jira, etc.), Monitoring System APIs (Datadog, Splunk, etc.), Cloud Provider APIs (AWS, Azure, GCP), UiPath for Coding Agents |
+| **Backend** | Next.js API Routes, Prisma ORM, MongoDB, UiPath Automation Cloud (Maestro, Agent Builder, API Workflows, Orchestrator) |
+| **APIs** | UiPath Orchestrator API, Groq API (Llama 3.3-70b for core reasoning), ITSM APIs (ServiceNow, Jira, etc.), Monitoring System APIs (Datadog, Splunk, etc.), Cloud Provider APIs (AWS, Azure, GCP), UiPath for Coding Agents |
+| **Database** | MongoDB (via Prisma) |
 | **Deployment** | UiPath Automation Cloud (for agents and workflows), Vercel (for Next.js dashboard), GitHub (for public repository) |
 
 ## 🧩 UiPath Integration Details
@@ -136,6 +137,9 @@ npm install
 ### 3. Environment Variables
 Create a `.env.local` file in the root directory and configure your actual API credentials:
 ```env
+# Database (MongoDB)
+DATABASE_URL="mongodb://localhost:27017/synapath"
+
 # UiPath Automation Cloud Credentials
 UIPATH_APP_ID="your_uipath_app_id"
 UIPATH_APP_SECRET="your_uipath_app_secret"
@@ -150,7 +154,7 @@ GROQ_API_KEY="your_groq_api_key"
 ### 4. Running the Application Locally
 
 ```bash
-# Setup the local SQLite database
+# Push Prisma schema to MongoDB
 npx prisma db push
 
 # Start the Next.js development server

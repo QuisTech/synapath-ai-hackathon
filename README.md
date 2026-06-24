@@ -56,7 +56,6 @@ Instead of executing blindly, SynaPath presents its findings in a breathtaking C
 | **Backend** | Next.js API Routes, Prisma ORM, MongoDB |
 | **AI/LLM** | Groq API (Llama 3.3-70b), Custom Agent Framework |
 | **Orchestration** | UiPath Automation Cloud (Maestro, Agent Builder, Orchestrator) |
-| **Video Generation** | Remotion (Cinematic demos, automated video creation) |
 | **Database** | MongoDB (via Prisma) |
 | **Deployment** | Vercel (Frontend), UiPath Cloud (Orchestration) |
 
@@ -152,11 +151,6 @@ The UiPath client implements graceful degradation:
 - **Purpose**: Executive-level observability into MTTR savings and system health
 - **Components**: Live dashboarding reflecting how quickly the autonomous agents are diagnosing incidents versus human industry baselines
 - **Route**: `/analytics`
-
-### Cinematic Demo
-- **Purpose**: Automated video demonstration of the agent pipeline
-- **Components**: Remotion-powered cinematic walkthrough with voiceover narration
-- **Route**: `/cinematic-demo`
 
 ---
 
